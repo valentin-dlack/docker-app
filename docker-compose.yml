@@ -1,39 +1,36 @@
-version: "3.9"  # Specify Docker Compose version
+version: "3"
 
 services:
-  # MySQL database
+
   mysql:
-    image: mysql:8.0  # Use the official MySQL image (version 8.0)
+    image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: root  # Set a root password (replace with your desired password)
-      MYSQL_DATABASE: test  # Set the database name
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test 
     volumes:
-      - mysql-data:/var/lib/mysql  # Persist data volume for MySQL
+      - mysql-data:/var/lib/mysql
 
-  # Redis cache
   redis:
-    image: redis:latest  # Use the official Redis image (latest version)
+    image: redis:latest 
 
-  # Your Node.js application
   app:
-    build: .  # Build the image from the current directory (where Dockerfile resides)
+    build: .
     ports:
-      - "8080:1337"  # Map container port 8080 to host port 1337
+      - "8080:1337"  
     environment:
-      REDIS_HOST: redis  # Connect to Redis using service name
-      REDIS_PORT: 6379  # Default Redis port
-      MYSQL_HOST: mysql  # Connect to MySQL using service name
-      MYSQL_USER: root  # Use the root user from the environment above
-      MYSQL_PASSWORD: root  # Use the root password from the environment above
+      REDIS_HOST: redis 
+      REDIS_PORT: 6379 
+      MYSQL_HOST: mysql  
+      MYSQL_USER: root  
+      MYSQL_PASSWORD: root
       MYSQL_DB: test
       FILE_PATH_TO_CHECK: "${FILE_PATH_TO_CHECK:-./dummy.txt}" 
-    depends_on:  # Ensure MySQL and Redis are started before the app
+    depends_on:
       - mysql
       - redis
     volumes:
-      - .:/app  # Mount current directory as /app in the container (for hot reload)
+      - .:/app
     hostname: mydocker
 
-# MySQL data volume
 volumes:
-  mysql-data: {}  # Empty volume definition for MySQL data persistence
+  mysql-data: {}
