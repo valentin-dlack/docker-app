@@ -14,7 +14,10 @@ services:
     image: redis:latest 
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
     ports:
       - "8080:1337"  
     environment:
