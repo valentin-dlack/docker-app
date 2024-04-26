@@ -27,7 +27,7 @@ services:
       MYSQL_USER: root  
       MYSQL_PASSWORD: root
       MYSQL_DB: test
-      FILE_PATH_TO_CHECK: "${FILE_PATH_TO_CHECK:-./dummy.txt}" 
+      FILE_PATH_TO_CHECK: "./dummy.txt}" 
     depends_on:
       - mysql
       - redis
