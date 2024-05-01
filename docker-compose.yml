@@ -1,39 +1,49 @@
-version: "3"
+version: '3.8'
 
 services:
-
-  mysql:
+  db:
     image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: test 
     volumes:
-      - mysql-data:/var/lib/mysql
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
 
   redis:
-    image: redis:latest 
+    image: redis:latest
+    restart: always
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: development
+  wordpress:
+    image: wordpress:5.8.1-php8.0-apache
     ports:
-      - "8080:1337"  
+      - "8081:80"
+    restart: always
     environment:
-      REDIS_HOST: redis 
-      REDIS_PORT: 6379 
-      MYSQL_HOST: mysql  
-      MYSQL_USER: root  
-      MYSQL_PASSWORD: root
-      MYSQL_DB: test
-      FILE_PATH_TO_CHECK: "./dummy.txt}" 
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_REDIS_HOST', 'redis');
+        define('WP_REDIS_PORT', '6379');
     depends_on:
-      - mysql
+      - db
       - redis
+    # Uncomment the following lines to scale the WordPress service
+    # deploy:
+    #   replicas: 2
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:80"
     volumes:
-      - .:/app
-    hostname: mydocker
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - wordpress
 
 volumes:
-  mysql-data: {}
+  db_data:
